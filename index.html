@@ -6,7 +6,6 @@
 <title>Meu perfil</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="contraste.css">
 </head>
 <body>
 <div class="blob b1"></div><div class="blob b2"></div>
@@ -24,10 +23,10 @@
   </section>
 
   <section class="card">
-    <h2>Meus animais favoritos</h2>
-    <p class="hint">Escolha um deles :)</p>
-    <div class="row" id="moods"></div>
-    <p class="mood-msg" id="moodMsg" aria-live="polite"></p>
+    <h2>Meus interesses</h2>
+    <p class="hint">Toque em um interesse para saber mais e ver as cores mudarem.</p>
+    <div class="row" id="interests"></div>
+    <div class="detail" id="detail">Nada selecionado ainda.</div>
   </section>
 
   <section class="card">
@@ -35,11 +34,11 @@
     <p>Tenho 20 anos, moro atualmente em Divinópolis - MG, mas sou de Mogi das Cruzes - SP. Sou estudante de Engenharia de Computação e estou no 4° período, tenho técnico em Análise e Desenvolvimento de Sistemas pelo SENAI.</p>
   </section>
 
-  <section class="card">
-    <h2>Meus interesses</h2>
-    <p class="hint">Toque em um interesse para saber mais.</p>
-    <div class="row" id="interests"></div>
-    <div class="detail" id="detail">Nada selecionado ainda.</div>
+  <section class="card" id="projetos">
+    <h2>Meus projetos</h2>
+    <p class="hint">Alguns dos projetos que desenvolvi :)</p>
+    <div class="projetos" id="projetos-lista"></div>
+    <a class="btn" href="https://github.com/marisxzh" target="_blank" rel="noopener">Ver tudo no GitHub</a>
   </section>
 
   <section class="card">
@@ -55,14 +54,14 @@ const $=id=>document.getElementById(id);
 const root=document.documentElement;
 
 /*cores:inicio*/
-/* Temas de animais */
-const moods=[
- {n:"Gato",e:"😾",c:["#fff4ea","#bcb79a","#c44a10","#c1bdbd"],m:"Amo a kira (minha gata)"},
- {n:"Tubarão",e:"🦈",c:["#f2f7fb","#b8c4d0","#071b3b","#6e8196"],m:"O fundo do mar é muito interessante"},
- {n:"Cachorro",e:"🐕‍🦺",c:["#fff8fb","#ffd3e3","#ae0946","#ffb3cc"],m:"Meu sonho é ter um"},
- {n:"Lontra",e:"🦦",c:["#faf7ff","#e3d6fa","#210c46","#cfb0e8"],m:"Uma gracinha"}
+const paletas=[
+ ["#ffffff","#fa8fb5","#ffb5c0","#ffb5c0"],  /* padrão */
+ ["#f3eaff","#29675c","#2c4c40","#2c4c40"],  /* Música */
+ ["#ffffff","#491507","#a6071f","#7f0618"],  /* Cozinhar */
+ ["#4f5472","#cfe9ff","#0b164c","#07033f"],  /* Passeios */
+ ["#ffffff","#501669","#46295a","#372145"],  /* Programação */
 ];
-let dark=false,cur=0;
+let dark=false;
 
 /* Ferramentas de cor: misturar e garantir contraste */
 const h2r=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
@@ -73,8 +72,8 @@ const cr=(a,b)=>{const x=lum(a),y=lum(b);return(Math.max(x,y)+.05)/(Math.min(x,y
 /* aproxima fg de "toward" até atingir o contraste mínimo contra bg */
 const legible=(fg,bg,min,toward)=>{let c=fg;for(let t=0;t<=1.001&&cr(c,bg)<min;t+=.05)c=mix(fg,toward,t);return c};
 
-function paint(){
-  const [b1,b2,ac,ac2]=moods[cur].c,K="#000000",W="#ffffff",DK="#14101c";
+function paint(c){
+  const [b1,b2,ac,ac2]=c,K="#000000",W="#ffffff",DK="#14101c";
   const p1=dark?mix(b2,K,.75):b1, p2=dark?mix(b1,K,.85):b2;           /* fundo da página */
   const card=dark?mix(p1,W,.12):mix(mix(b1,b2,.25),W,.6);              /* cartões sempre contrastam com o texto */
   const ink=dark?legible(mix(b1,W,.9),card,9,W):legible(mix(ac,K,.7),card,9,K);
@@ -89,37 +88,26 @@ function paint(){
 }
 /*cores:fim*/
 
-function setMood(i){
-  cur=i;paint();
-  $("moodMsg").textContent=moods[i].m;
-  [...$("moods").children].forEach((b,k)=>b.setAttribute("aria-pressed",k===i));
-}
-moods.forEach((t,i)=>{
-  const b=document.createElement("button");b.className="chip";b.textContent=t.e+" "+t.n;
-  b.onclick=()=>setMood(i);$("moods").append(b);
-});
-setMood(0);
+/* Interesses: cada um tem sua paleta (c) e seu conteúdo */
+const interests=[
+ {n:"🎧 Música",c:paletas[1],
+  texto:"Goste de R&B alternativo, pop, indie, etc",
+  album:{img:"fotos/album.jpg",nome:"CASE STUDY 01",artista:"Daniel Caesar"},
+  botao:{texto:"Ouvir a playlist",url:"https://open.spotify.com/intl-pt/album/7lb4ck9tn2ZaJRrYjhyP9A?si=lSfzZzwLQkuCUt-irDjv7A"}},
+ {n:"🍳 Cozinhar",c:paletas[2],
+  texto:"Pratos que saíram da minha cozinha.",
+  fotos:[{img:"fotos/prato2.jpg",legenda:"Yakissoba"},{img:"fotos/prato1.jpg",legenda:"Churrasco"}, {img:"fotos/prato3.jpg",legenda:"Missoshiro"}]},
+ {n:"🧭 Passeios",c:paletas[3],
+  texto:"Lugares que visitei e guardei na memória.",
+  fotos:[{img:"fotos/lugar1.jpg",legenda:"Praia da Feiticeira, Ilhabela, 2023"},{img:"fotos/lugar2.jpg",legenda:"Pirinópolis, Goiás, 2026"}, {img:"fotos/lugar3.jpg",legenda:"Bertioga, Riviera de São Lourenço, 2025"}]},
+ {n:"💻 Programação",c:paletas[4],
+  texto:"Criar páginas, brincar com ideias e aprender sempre.",
+  botao:{texto:"Ver meus projetos",url:"#projetos"}}
+];
+let sel=-1;
+const aplicar=()=>paint(sel<0?paletas[0]:interests[sel].c);
+aplicar();
 
-/* Interesses */
-const interests={
- "🎧 Música":{
-   texto:"Daniel Caesar, Frank Ocean e Tyler, The Creator.",
-   album:{img:"fotos/album.jpg",nome:"Nome do álbum",artista:"Artista"},
-   playlist:"https://open.spotify.com/playlist/SEU_ID"
- },
- "🍳 Cozinhar":{
-   texto:"Pratos que saíram da minha cozinha.",
-   fotos:[{img:"fotos/prato1.jpg",legenda:"Nome do prato"},{img:"fotos/prato2.jpg",legenda:"Nome do prato"}]
- },
- "🧭 Passeios":{
-   texto:"Lugares que visitei e guardei na memória.",
-   fotos:[{img:"fotos/lugar1.jpg",legenda:"Cidade, onde foi, quando"},{img:"fotos/lugar2.jpg",legenda:"Cidade, onde foi, quando"}]
- },
- "💻 Programação":{
-   texto:"Projetos em que trabalhei:",
-   repos:[{nome:"portfolio-git",url:"https://github.com/marisxzh/portfolio-git",desc:"Projeto desenvolvido para o curso de git"}, {nome: "projeto-equipe", url: "https://github.com/marisxzh/projeto-equipe", desc:"Projeto desenvolvido em dupla para o curso de git"}]
- }
-};
 function el(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt)e.textContent=txt;return e}
 function foto(src,alt,vazio){
   const f=el("div","foto"),img=document.createElement("img");
@@ -129,7 +117,6 @@ function foto(src,alt,vazio){
 }
 function mostrar(v){
   const d=$("detail");d.replaceChildren();
-  if(typeof v==="string"){d.textContent=v;return}
   if(v.texto)d.append(el("p","txt",v.texto));
   if(v.album){
     const a=el("div","album"),info=el("div");
@@ -137,31 +124,43 @@ function mostrar(v){
     info.append(el("strong","",v.album.nome),el("span","",v.album.artista));
     a.append(info);d.append(a);
   }
-  if(v.playlist){const l=el("a","btn","Ouvir a playlist");l.href=v.playlist;l.target="_blank";l.rel="noopener";d.append(l)}
+  if(v.botao){
+    const l=el("a","btn",v.botao.texto);l.href=v.botao.url;
+    if(v.botao.url[0]!=="#"){l.target="_blank";l.rel="noopener"}
+    d.append(l);
+  }
   if(v.fotos){
     const g=el("div","galeria");
     v.fotos.forEach(f=>{const fig=el("figure");fig.append(foto(f.img,f.legenda,"📷"));if(f.legenda)fig.append(el("figcaption","",f.legenda));g.append(fig)});
     d.append(g);
   }
-  if(v.repos){
-    const r=el("div","repos");
-    v.repos.forEach(x=>{const a=el("a","repo");a.href=x.url;a.target="_blank";a.rel="noopener";a.append(el("strong","",x.nome),el("span","",x.desc||""));r.append(a)});
-    d.append(r);
-  }
 }
-Object.entries(interests).forEach(([k,v])=>{
-  const b=document.createElement("button");b.className="chip";b.textContent=k;b.setAttribute("aria-pressed","false");
+interests.forEach((it,i)=>{
+  const b=el("button","chip",it.n);b.setAttribute("aria-pressed","false");
   b.onclick=()=>{
-    const on=b.getAttribute("aria-pressed")==="true";
-    [...$("interests").children].forEach(x=>x.setAttribute("aria-pressed","false"));
-    b.setAttribute("aria-pressed",!on);
-    if(on){$("detail").textContent="Nada selecionado ainda."}else{mostrar(v)}
+    sel=(sel===i)?-1:i;
+    [...$("interests").children].forEach((x,k)=>x.setAttribute("aria-pressed",k===sel));
+    if(sel<0){$("detail").textContent="Nada selecionado ainda."}else{mostrar(it)}
+    aplicar();
   };
   $("interests").append(b);
 });
 
+/* Meus projetos (do GitHub) */
+const projetos=[
+ {nome:"aapm-tcc",desc:"TCC - Site voltado ao apoio das atividades da AAPM SENAI",tags:["EJS","JavaScript"],url:"https://github.com/marisxzh/aapm-tcc"},
+ {nome:"sistema_onibus",desc:"Código de um sistema de reserva de passagens de ônibus.",tags:["Python"],url:"https://github.com/marisxzh/sistema_onibus"},
+ {nome:"Monitoramento De Tendencias",desc:" Sistema de monitoramento de tendências em manchetes de notícias",tags:["C++"],url:"https://github.com/marisxzh/MonitoramentoDeTendencias"}
+];
+projetos.forEach(p=>{
+  const a=el("a","projeto");a.href=p.url;a.target="_blank";a.rel="noopener";
+  a.append(el("h3","",p.nome+" ↗"),el("p","",p.desc));
+  const t=el("div","tags");(p.tags||[]).forEach(x=>t.append(el("span","",x)));
+  a.append(t);$("projetos-lista").append(a);
+});
+
 /* Contatos */
-[["E-mail","marianakyano@email.com"],["Instagram","@marisxzh"],["GitHub","github.com/marisxzh"]].forEach(([k,v])=>{
+[["E-mail","marianakyano@gmail.com"],["Instagram","@marisxzh"],["GitHub","github.com/marisxzh"]].forEach(([k,v])=>{
   const b=document.createElement("button");b.className="link";
   b.innerHTML=`<span><strong>${k}</strong><small>${v}</small></span><span>⧉</span>`;
   b.onclick=async()=>{
@@ -190,7 +189,7 @@ let w=0,c=0,del=false;
 document.addEventListener("click",e=>{
   if(e.target.closest("button")&&!e.target.closest(".avatar"))return;
   for(let i=0;i<6;i++){
-    const s=document.createElement("span");s.className="spark";s.textContent=["✦","♡","✧"][i%3];
+    const s=document.createElement("span");s.className="spark";s.textContent=["☆","♡"][i%3];
     s.style.left=e.clientX+"px";s.style.top=e.clientY+"px";
     s.style.setProperty("--dx",(Math.random()*90-45)+"px");s.style.setProperty("--dy",(Math.random()*-80-10)+"px");
     s.style.color=getComputedStyle(root).getPropertyValue("--accent");
@@ -200,7 +199,7 @@ document.addEventListener("click",e=>{
 
 /* Tema claro/escuro */
 $("mode").onclick=()=>{
-  dark=!dark;paint();
+  dark=!dark;aplicar();
   $("mode").textContent=dark?"☀":"☾";
 };
 </script>
