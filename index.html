@@ -41,6 +41,12 @@
     <a class="btn" href="https://github.com/marisxzh" target="_blank" rel="noopener">Ver tudo no GitHub</a>
   </section>
 
+  <section class="card" id="projetos-git">
+    <h2>Projetos do curso de Git</h2>
+    <p class="hint">Atividades que fiz durante o curso :)</p>
+    <div class="projetos" id="projetos-git-lista"></div>
+  </section>
+
   <section class="card">
     <h2>Vamos conversar</h2>
     <p class="hint">Toque para copiar.</p>
@@ -101,7 +107,7 @@ const interests=[
   texto:"Lugares que visitei e guardei na memória.",
   fotos:[{img:"fotos/lugar1.jpg",legenda:"Praia da Feiticeira, Ilhabela, 2023"},{img:"fotos/lugar2.jpg",legenda:"Pirinópolis, Goiás, 2026"}, {img:"fotos/lugar3.jpg",legenda:"Bertioga, Riviera de São Lourenço, 2025"}]},
  {n:"💻 Programação",c:paletas[4],
-  texto:"Criar páginas, brincar com ideias e aprender sempre.",
+  texto:"Clique para ver alguns dos meus projetos ;)",
   botao:{texto:"Ver meus projetos",url:"#projetos"}}
 ];
 let sel=-1;
@@ -170,6 +176,20 @@ projetos.forEach(p=>{
   $("links").append(b);
 });
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("on");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("on"),1800)}
+
+/* Projetos do curso de Git */
+const projetosGit=[
+ {nome:"portfolio-git",desc:"Atividade do curso de Git: repositório conectado ao GitHub.",tags:["Git","GitHub"],url:"https://github.com/marisxzh/portfolio-git"},
+ {nome:"projeto-equipe",desc:"Projeto desenvolvido em dupla, para a solução de problemas encontrados em projetos (issues).",tags:["Git"],url:"https://github.com/marisxzh/projeto-equipe"}
+];
+projetosGit.forEach(p=>{
+  const a=el("a","projeto");a.href=p.url;a.target="_blank";a.rel="noopener";
+  a.append(el("h3","",p.nome+" ↗"),el("p","",p.desc));
+  const t=el("div","tags");(p.tags||[]).forEach(x=>t.append(el("span","",x)));
+  a.append(t);$("projetos-git-lista").append(a);
+});
+
+
 
 /* Avatar vira */
 $("avatar").onclick=()=>$("avatar").classList.toggle("flip");
